@@ -20,7 +20,7 @@ So, everyone wants an oauth2 impl in Play2 Scala API and this project can save y
 
 Here is the usage:
 
-* Clone this repo and build the jar with mvn jar:jar
+* Clone this repo and build the jar with _mvn compile_  and  _mvn jar:jar_
 * Copy the jar to Play2 project under lib/  
 * put this in your routes:
 
