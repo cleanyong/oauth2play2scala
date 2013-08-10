@@ -3,6 +3,8 @@ oauth2play2scala
 
 oauth2 auth and token server for Play 2 Scala API. Ported from Apache Amber.
 
+Why this project?
+-----------------
 
 As Play2 document mentioned that impl an oauth2 server just piece of cake, so I give it a try, by found out not so easy.Because oauth2 spec is very board.
 
@@ -19,6 +21,7 @@ So, everyone wants an oauth2 impl in Play2 Scala API and this project can save y
 
 
 Here is the usage:
+------------------
 
 * Clone this repo and build the jar with _mvn compile_  and  _mvn jar:jar_
 * Copy the jar to Play2 project under lib/  
