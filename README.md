@@ -26,6 +26,7 @@ GET    /oauth2/auth    			controllers.Application.auth()
 POST 	/oauth2/token    			controllers.Application.token()
 
 4. create the action like this:
+```
   def auth = Action { implicit request =>
     try {
       //dynamically recognize an OAuth profile based on request characteristic (params,
@@ -119,6 +120,6 @@ POST 	/oauth2/token    			controllers.Application.token()
     }
 
   }
-  
+```  
   
 6. Please figure out create your KDC and userRealm yourself. Have fun !
