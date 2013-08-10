@@ -4,28 +4,33 @@ oauth2play2scala
 oauth2 auth and token server for Play 2 Scala API. Ported from Apache Amber.
 
 
-As Play2 document mentioned that impl an oauth2 server just piece of cake, so I give it a try, by found out not so easy.Because oauth2 spec if very board.
+As Play2 document mentioned that impl an oauth2 server just piece of cake, so I give it a try, by found out not so easy.Because oauth2 spec is very board.
 
-Then I try to find the oauth2 impl for Play2.
+Then I try to find the oauth2 impl for Play2. Basic idea is I want an impl that battle tested.
 
 1. securesocial is not an oauth2 server
 2. deadbolt is not an oauth2 server
 3. scalatra/oauth2-server is not a Play2 plugin
 4. raibledesigns.com/rd/entry/secure_json_services_with_play is not an oauth2 server
 
-OK, let me try using Apache Amber from Scala/Play2, this one works with changed HttpServletRequest to play.api.mvc.Request !
+Because the above solutions not so fit, OK, at least let me try using Apache Amber from Scala/Play2, this one works with changed HttpServletRequest to play.api.mvc.Request !
 
-So, everyone wants an oauth2 impl in Play2 and save you 9 hours! ( I used more then this :-)  )
+So, everyone wants an oauth2 impl in Play2 Scala API and this project can save you 9 hours! ( I used more then this to port :-)  )
 
 
 Here is the usage:
-1. Clone this repo and build the jar with mvn jar:jar
-2. Copy the jar to Play2 project under lib/  
-3. put this in your routes:
-GET    /oauth2/auth    			controllers.Application.auth()
-POST 	/oauth2/token    			controllers.Application.token()
 
-4. create the action like this:
+* Clone this repo and build the jar with mvn jar:jar
+* Copy the jar to Play2 project under lib/  
+* put this in your routes:
+
+```
+GET    /oauth2/auth    			controllers.Application.auth()
+
+POST 	/oauth2/token    			controllers.Application.token()
+```
+* create the action like this (just the Apache Amber/Oltu wiki example in Scala Play 2):
+
 ```
   def auth = Action { implicit request =>
     try {
@@ -122,4 +127,10 @@ POST 	/oauth2/token    			controllers.Application.token()
   }
 ```  
   
-6. Please figure out create your KDC and userRealm yourself. Have fun !
+* test url:
+
+  http://localhost:9000/oauth2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&state=%2Fprofile&redirect_uri=https%3A%2F%2Foauth2-login-demo.appspot.com%2Fcode&response_type=code&client_id=812741506391.apps.googleusercontent.com&approval_prompt=force
+  
+  http://localhost:9000/oauth2/token?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&client_id=8819981768.apps.googleusercontent.com&client_secret=skjdfkjsdhfkj&redirect_uri=https://oauth2-login-demo.appspot.com/code&grant_type=authorization_code
+
+* Please figure out create your KDC and userRealm yourself. Have fun !
