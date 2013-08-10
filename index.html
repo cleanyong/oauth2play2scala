@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Oauth2play2scala : oauth2 auth and token server for Play 2 Scala API. Ported from Apache Amber." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Oauth2play2scala</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/cleanyong/oauth2play2scala">View on GitHub</a>
+
+          <h1 id="project_title">Oauth2play2scala</h1>
+          <h2 id="project_tagline">oauth2 auth and token server for Play 2 Scala API. Ported from Apache Amber.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/cleanyong/oauth2play2scala/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/cleanyong/oauth2play2scala/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="oauth2play2scala" class="anchor" href="#oauth2play2scala"><span class="octicon octicon-link"></span></a>oauth2play2scala</h1>
+
+<p>oauth2 auth and token server for Play 2 Scala API. Ported from Apache Amber.</p>
+
+<p>As Play2 document mentioned that impl an oauth2 server just piece of cake, so I give it a try, by found out not so easy.Because oauth2 spec is very board.</p>
+
+<p>Then I try to find the oauth2 impl for Play2. Basic idea is I want an impl that battle tested.</p>
+
+<ol>
+<li>securesocial is not an oauth2 server</li>
+<li>deadbolt is not an oauth2 server</li>
+<li>scalatra/oauth2-server is not a Play2 plugin</li>
+<li>raibledesigns.com/rd/entry/secure_json_services_with_play is not an oauth2 server</li>
+</ol><p>Because the above solutions not so fit, OK, at least let me try using Apache Amber from Scala/Play2, this one works with changed HttpServletRequest to play.api.mvc.Request !</p>
+
+<p>So, everyone wants an oauth2 impl in Play2 Scala API and this project can save you 9 hours! ( I used more then this to port :-)  )</p>
+
+<p>Here is the usage:</p>
+
+<ul>
+<li>Clone this repo and build the jar with mvn jar:jar</li>
+<li>Copy the jar to Play2 project under lib/<br>
+</li>
+<li>put this in your routes:</li>
+</ul><pre><code>GET    /oauth2/auth             controllers.Application.auth()
+
+POST    /oauth2/token               controllers.Application.token()
+</code></pre>
+
+<ul>
+<li>create the action like this (just the Apache Amber/Oltu wiki example in Scala Play 2):</li>
+</ul><pre><code>  def auth = Action { implicit request =&gt;
+    try {
+      //dynamically recognize an OAuth profile based on request characteristic (params,
+      // method, content type etc.), perform validation
+      val oauthRequest = new OAuthAuthzRequest(request)
+
+      //some code ....
+      if (oauthRequest.getClientSecret() == null) {
+        //              throw OAuthProblemException.error("404", "no such user")
+      }
+
+      //build OAuth response
+      val resp = OAuthASResponse.
+        authorizationResponse(request, 302).
+        setCode("hfsfhkjsdf").
+        location("http://app-host:9000/authz").
+        buildQueryMessage();
+      Found(resp.getLocationUri())
+
+      //if something goes wrong
+    } catch {
+      case ex: OAuthProblemException =&gt;
+
+        try {
+          val resp = OAuthResponse.
+            errorResponse(404).error(ex).location("http://app-host:9000/erro").buildQueryMessage();
+          Redirect(resp.getLocationUri());
+
+        } catch {
+          case e: OAuthSystemException =&gt;
+            e.printStackTrace();
+            InternalServerError(e.getMessage());
+        }
+      case ex: OAuthSystemException =&gt;
+        ex.printStackTrace()
+        InternalServerError(ex.getMessage())
+
+    }
+
+  }
+
+  def token = Action { implicit request =&gt;
+
+    val oauthIssuerImpl: OAuthIssuer = new OAuthIssuerImpl(new MD5Generator());
+
+    try {
+      val oauthRequest: OAuthTokenRequest = new OAuthTokenRequest(request);
+
+      val authzCode = oauthRequest.getCode();
+
+      // some code
+      // System.out.println(authzCode);
+
+      val accessToken = oauthIssuerImpl.accessToken();
+      val refreshToken = oauthIssuerImpl.refreshToken();
+
+      // some code
+      System.out.println(accessToken);
+      System.out.println(refreshToken);
+
+      val r = OAuthASResponse
+        .tokenResponse(200) //HttpServletResponse.SC_OK
+        .setAccessToken(accessToken)
+        .setExpiresIn("3600")
+        .setRefreshToken(refreshToken)
+        .buildJSONMessage();
+
+      Ok(r.getBody());
+
+      //if something goes wrong
+    } catch {
+      case ex: OAuthProblemException =&gt;
+        var r: OAuthResponse = null;
+        try {
+          r = OAuthResponse
+            .errorResponse(401)
+            .error(ex)
+            .buildJSONMessage();
+        } catch {
+          case e: OAuthSystemException =&gt;
+            e.printStackTrace();
+            InternalServerError(e.getMessage());
+        }
+
+        InternalServerError(r.getBody());
+
+      case ex: OAuthSystemException =&gt;
+        ex.printStackTrace()
+        InternalServerError(ex.getMessage())
+
+    }
+
+  }
+</code></pre>
+
+<ul>
+<li>
+<p>test url:</p>
+
+<p>http://localhost:9000/oauth2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&amp;state=%2Fprofile&amp;redirect_uri=https%3A%2F%2Foauth2-login-demo.appspot.com%2Fcode&amp;response_type=code&amp;client_id=812741506391.apps.googleusercontent.com&amp;approval_prompt=force</p>
+
+<p>http://localhost:9000/oauth2/token?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&amp;client_id=8819981768.apps.googleusercontent.com&amp;client_secret=skjdfkjsdhfkj&amp;redirect_uri=<a href="https://oauth2-login-demo.appspot.com/code&amp;grant_type=authorization_code">https://oauth2-login-demo.appspot.com/code&amp;grant_type=authorization_code</a></p>
+</li>
+<li><p>Please figure out create your KDC and userRealm yourself. Have fun !</p></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Oauth2play2scala maintained by <a href="https://github.com/cleanyong">cleanyong</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
