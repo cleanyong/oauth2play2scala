@@ -137,3 +137,13 @@ POST 	/oauth2/token    			controllers.Application.token()
   http://localhost:9000/oauth2/token?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&client_id=8819981768.apps.googleusercontent.com&client_secret=skjdfkjsdhfkj&redirect_uri=https://oauth2-login-demo.appspot.com/code&grant_type=authorization_code
 
 * Please figure out create your KDC and userRealm yourself. Have fun !
+* 
+
+
+
+
+YourKit is kindly supporting this open source project with its full-featured Java Profiler.
+YourKit, LLC is the creator of innovative and intelligent tools for profiling
+Java and .NET applications. Take a look at YourKit's leading software products:
+<a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and
+<a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.
