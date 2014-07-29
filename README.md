@@ -137,7 +137,7 @@ POST 	/oauth2/token    			controllers.Application.token()
   http://localhost:9000/oauth2/token?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&client_id=8819981768.apps.googleusercontent.com&client_secret=skjdfkjsdhfkj&redirect_uri=https://oauth2-login-demo.appspot.com/code&grant_type=authorization_code
 
 * Please figure out create your KDC and userRealm yourself. Have fun !
-* 
+
 
 
 
